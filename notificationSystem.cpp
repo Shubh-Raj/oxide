@@ -43,7 +43,6 @@ public:
 class TimeStampDecorator : public INotificationDecorator
 {
 public:
-    
     TimeStampDecorator(INotification *n) : INotificationDecorator(n) {}
     string getContent()
     {
@@ -67,146 +66,217 @@ public:
     }
 };
 
-//Observer Pattern
+// Observer Pattern
 
-class IObserver{
-    public:
+class IObserver
+{
+public:
     virtual void update() = 0;
     virtual ~IObserver() {};
 };
 
-class IObservable {
+class IObservable
+{
 public:
-    virtual void addObserver(IObserver* observer) = 0;
-    virtual void removeObserver(IObserver* observer) = 0;
+    virtual void addObserver(IObserver *observer) = 0;
+    virtual void removeObserver(IObserver *observer) = 0;
     virtual void notifyObservers() = 0;
 };
 
-class NotificationObservable :  public IObservable {
+class NotificationObservable : public IObservable
+{
 private:
-    vector<IObserver*> observers;
-    INotification* currentNotification;
+    vector<IObserver *> observers;
+    INotification *currentNotification;
+
 public:
-    NotificationObservable() { 
-        currentNotification = nullptr; 
+    NotificationObservable()
+    {
+        currentNotification = nullptr;
     }
 
-    void addObserver(IObserver* obs) override {
+    void addObserver(IObserver *obs) override
+    {
         observers.push_back(obs);
     }
 
-    void removeObserver(IObserver* obs) override {
+    void removeObserver(IObserver *obs) override
+    {
         observers.erase(remove(observers.begin(), observers.end(), obs), observers.end());
     }
 
-    void notifyObservers() override {
-        for (unsigned int i = 0; i < observers.size(); i++) {
+    void notifyObservers() override
+    {
+        for (unsigned int i = 0; i < observers.size(); i++)
+        {
             observers[i]->update();
         }
     }
 
-    void setNotification(INotification* notification) {
-        if (currentNotification != nullptr) {
+    void setNotification(INotification *notification)
+    {
+        if (currentNotification != nullptr)
+        {
             delete currentNotification;
         }
         currentNotification = notification;
         notifyObservers();
     }
 
-    INotification* getNotification() {
+    INotification *getNotification()
+    {
         return currentNotification;
     }
 
-    string getNotificationContent() {
+    string getNotificationContent()
+    {
         return currentNotification->getContent();
     }
 
-    ~NotificationObservable() {
-        if (currentNotification != NULL) {
+    ~NotificationObservable()
+    {
+        if (currentNotification != NULL)
+        {
             delete currentNotification;
         }
     }
 };
 
-class Logger : public IObserver {
+class Logger : public IObserver
+{
 private:
-    NotificationObservable* notificationObservable;
+    NotificationObservable *notificationObservable;
 
 public:
-    Logger(NotificationObservable* observable) {
+    Logger(NotificationObservable *observable)
+    {
         this->notificationObservable = observable;
     }
 
-    void update() {
-        cout << "Logging New Notification : \n" << notificationObservable->getNotificationContent();
+    void update()
+    {
+        cout << "Logging New Notification : \n"
+             << notificationObservable->getNotificationContent();
     }
 };
 
-class INotificationStrategy {
-public:    
+class INotificationStrategy
+{
+public:
     virtual void sendNotification(string content) = 0;
 };
 
-class EmailStrategy : public INotificationStrategy {
+class EmailStrategy : public INotificationStrategy
+{
 private:
     string emailId;
-public:
 
-    EmailStrategy(string emailId) {
+public:
+    EmailStrategy(string emailId)
+    {
         this->emailId = emailId;
     }
 
-    void sendNotification(string content) override {
-        cout << "Sending email Notification to: " << emailId << "\n" << content;
+    void sendNotification(string content) override
+    {
+        cout << "Sending email Notification to: " << emailId << "\n"
+             << content;
     }
 };
 
-class SMSStrategy : public INotificationStrategy {
+class SMSStrategy : public INotificationStrategy
+{
 private:
     string mobileNumber;
-public:
 
-    SMSStrategy(string mobileNumber) {
+public:
+    SMSStrategy(string mobileNumber)
+    {
         this->mobileNumber = mobileNumber;
     }
 
-    void sendNotification(string content) override {
-        cout << "Sending SMS Notification to: " << mobileNumber << "\n" << content;
+    void sendNotification(string content) override
+    {
+        cout << "Sending SMS Notification to: " << mobileNumber << "\n"
+             << content;
     }
 };
 
-class PopUpStrategy : public INotificationStrategy {
+class PopUpStrategy : public INotificationStrategy
+{
 public:
-    void sendNotification(string content) override {
-        cout << "Sending Popup Notification: \n" << content;
+    void sendNotification(string content) override
+    {
+        cout << "Sending Popup Notification: \n"
+             << content;
     }
 };
 
-
-class NotificationEngine : public IObserver {
+class NotificationEngine : public IObserver
+{
 private:
-    NotificationObservable* notificationObservable;
-    vector<INotificationStrategy*> notificationStrategies;
+    NotificationObservable *notificationObservable;
+    vector<INotificationStrategy *> notificationStrategies;
 
 public:
-    NotificationEngine(NotificationObservable* observable) {
+    NotificationEngine(NotificationObservable *observable)
+    {
         this->notificationObservable = observable;
     }
 
-    void addNotificationStrategy(INotificationStrategy* ns) {
+    void addNotificationStrategy(INotificationStrategy *ns)
+    {
         this->notificationStrategies.push_back(ns);
     }
 
-
-    void update() {
+    void update()
+    {
         string notificationContent = notificationObservable->getNotificationContent();
-        for(const auto notificationStrategy : notificationStrategies) {
+        for (const auto notificationStrategy : notificationStrategies)
+        {
             notificationStrategy->sendNotification(notificationContent);
         }
     }
 };
 
+class NotificationService
+{
+    NotificationObservable *observable;
+    static NotificationService *instance;
+    vector<INotification *> notifications;
 
-int main(){
-    cout<<"0";
+    NotificationService()
+    {
+        observable = new NotificationObservable();
+    }
+
+public:
+    static NotificationService *getInstance()
+    {
+        if (instance == nullptr)
+        {
+            instance = new NotificationService();
+        }
+        return instance;
+    }
+    NotificationObservable *getObservable()
+    {
+        return observable;
+    }
+
+    void sendNotification(INotification *notification)
+    {
+        notifications.push_back(notification); 
+        observable->setNotification(notification);
+    }
+
+    ~NotificationService()
+    {
+        delete observable;
+    }
+};
+
+int main()
+{
+    cout << "0";
 }
