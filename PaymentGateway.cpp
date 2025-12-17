@@ -115,3 +115,38 @@ public:
         return true;
     }
 };
+
+class PaymentGatewayProxy : public PaymentGateway{
+    PaymentGateway* realPaymentGateway;
+    int attempts = 0;
+    public:
+    PaymentGatewayProxy(PaymentGateway* paymentgateway, int attempts){
+        realPaymentGateway = paymentgateway;
+        this->attempts = attempts;
+    }
+    bool processPayment(PaymentRequest* request) override {
+        bool result = false;
+        for (int attempt = 0; attempt < attempts; ++attempt) {
+            if (attempt > 0) {
+                cout << "[Proxy] Retrying payment (attempt " << (attempt+1)
+                          << ") for " << request->sender << ".\n";
+            }
+            result = realPaymentGateway->processPayment(request);
+            if (result) break;
+        }
+        if (!result) {
+            cout << "[Proxy] Payment failed after " << (attempts)
+                      << " attempts for " << request->sender << ".\n";
+        }
+        return result;
+    }
+    bool validatePayment(PaymentRequest* request) override {
+        return realPaymentGateway->validatePayment(request);
+    }
+    bool initiatePayment(PaymentRequest* request) override {
+        return realPaymentGateway->initiatePayment(request);
+    }
+    bool confirmPayment(PaymentRequest* request) override {
+        return realPaymentGateway->confirmPayment(request);
+    }
+};
