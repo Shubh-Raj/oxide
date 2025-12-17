@@ -5,7 +5,8 @@ class PaymentRequest{
     public:
     string sender, receiver, currency;
     double amount;
-    void setPaymentRequest(string& sender, string& receiver, string& currency, double amount){
+    //use constructor instead
+    void setPaymentRequest(const string& sender, const string& receiver, const string& currency, double amount){
         this->sender = sender;
         this->receiver = receiver;
         this->currency = currency;
@@ -221,3 +222,13 @@ class PaymentController{
 };
 
 PaymentController PaymentController::instance;
+
+int main(){
+    srand(static_cast<unsigned>(time(nullptr)));
+    PaymentRequest* req1 = new PaymentRequest();
+    req1->setPaymentRequest("Aditya", "Shubham","INR", 1000.0) ;
+    // PaymentRequest* req1 = new PaymentRequest("Aditya", "Shubham","INR", 1000.0);
+    bool res1 = PaymentController::getInstance().handlePayment(GatewayType::PAYTM, req1);
+    cout << "Result: " << (res1 ? "SUCCESS" : "FAIL") << "\n";
+
+}
