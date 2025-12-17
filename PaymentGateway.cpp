@@ -203,3 +203,21 @@ class PaymentService{
 };
 
 PaymentService PaymentService:: instance;
+
+class PaymentController{
+    private:
+    static PaymentController instance;
+    PaymentController(){}
+    // PaymentService* paymentService;
+    public:
+    static PaymentController& getInstance(){
+        return instance;
+    }
+    bool handlePayment(GatewayType type, PaymentRequest* PaymentRequest){
+        PaymentGateway* paymentGateway = GatewayFactory::getInstance().getGateway(type);
+        PaymentService::getInstance().setGateway(paymentGateway);
+        return PaymentService::getInstance().processPayment(PaymentRequest);
+    }
+};
+
+PaymentController PaymentController::instance;
