@@ -150,3 +150,28 @@ class PaymentGatewayProxy : public PaymentGateway{
         return realPaymentGateway->confirmPayment(request);
     }
 };
+
+enum class GatewayType{
+    PAYTM,
+    RAZORPAY
+};
+
+class GatewayFactory{
+    private:
+    static GatewayFactory instance;
+    GatewayFactory() {}
+    public:
+    static GatewayFactory& getInstance(){
+        return instance;
+    }
+    PaymentGateway* getGateway(GatewayType gt){
+        if(gt==GatewayType::PAYTM){
+            PaymentGateway* paymentGateway = new PaytmGateway();
+            return new PaymentGatewayProxy(paymentGateway,3);
+        }
+        else if(gt==GatewayType::RAZORPAY){
+            PaymentGateway* paymentGateway = new RazorpayGateway();
+            return new PaymentGatewayProxy(paymentGateway,1);
+        }
+    }
+};
