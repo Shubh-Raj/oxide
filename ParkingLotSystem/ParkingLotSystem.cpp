@@ -45,7 +45,43 @@ public:
 class Bike : public Vehicle
 {
 public:
-    Bike(string license) : Vehicle(SMALL, license){}
+    Bike(string license) : Vehicle(SMALL, license) {}
 };
 
+class ParkingSpot
+{
+private:
+    VehicleSize spotSize;
+    string spotId;
+    bool isOccupied;
+    Vehicle *parkedVehicle;
 
+public:
+    ParkingSpot(string id, VehicleSize size)
+    {
+        isOccupied = false;
+        spotSize = size;
+        spotId = id;
+        parkedVehicle = nullptr;
+    }
+    bool canFitVehicle(Vehicle *vehicle)
+    {
+        return !isOccupied && vehicle->getSize() <= spotSize;
+    }
+    bool parkVehicle(Vehicle *vehicle)
+    {
+        isOccupied = true;
+        parkedVehicle = vehicle;
+    }
+    bool unparkVehicle(Vehicle *vehicle)
+    {
+        isOccupied = false;
+        parkedVehicle = nullptr;
+    }
+    bool isAvailable()
+    {
+        return !isOccupied;
+    }
+    string getSpotId() const { return spotId; }
+    VehicleSize getSpotSize() const { return spotSize; }
+};
