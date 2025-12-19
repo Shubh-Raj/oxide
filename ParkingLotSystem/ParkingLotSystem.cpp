@@ -123,3 +123,28 @@ public:
         return parkingSpot;
     }
 };
+
+class ParkingFloor{
+    private:
+    int floorNumber;
+    map<string,ParkingSpot*> spots;
+    // vector<ParkingObserver*> observers;
+    public:
+    ParkingFloor(int floorNum){
+        floorNumber = floorNumber;
+    }
+    void addSpot(ParkingSpot* spot) {
+        spots[spot->getSpotId()] = spot;
+    }
+    ParkingSpot* findAvailableSpot(Vehicle* vehicle) {
+        for (auto it : spots) {
+            if (it.second->canFitVehicle(vehicle)) {
+                return it.second;
+            }
+        }
+        return nullptr; // No spot found
+    }
+    int getFloorNumber() const {
+        return floorNumber;
+    }
+};
