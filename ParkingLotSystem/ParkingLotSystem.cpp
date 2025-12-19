@@ -134,7 +134,7 @@ private:
 public:
     ParkingFloor(int floorNum)
     {
-        floorNumber = floorNumber;
+        floorNumber = floorNum;
     }
     void addSpot(ParkingSpot *spot)
     {
@@ -200,5 +200,44 @@ public:
     void update(int floorNumber, int availableSpots) override
     {
         cout << "DISPLAY BOARD: Floor " << floorNumber << " has " << availableSpots << " spots available." << endl;
+    }
+};
+
+
+class ParkingStrategy{
+    public:
+    virtual ParkingSpot* findSpot(vector<ParkingFloor*>& floors, Vehicle* vehicle) = 0;
+    virtual ~ParkingStrategy() = default;
+};
+
+class NearestFit : public ParkingStrategy{
+public:
+    ParkingSpot* findSpot(vector<ParkingFloor*>& floors, Vehicle* vehicle) override
+    {
+        for (int i = 0; i < floors.size(); i++)
+        {
+            ParkingSpot* spot = floors[i]->findAvailableSpot(vehicle);
+            if (spot != nullptr)
+            {
+                return spot;
+            }
+        }
+        return nullptr;
+    }
+};
+
+class FarthestFit : public ParkingStrategy{
+    public:
+    ParkingSpot* findSpot(vector<ParkingFloor*>& floors, Vehicle* vehicle) override
+    {
+        for (int i = floors.size() - 1; i >= 0; i--)
+        {
+            ParkingSpot* spot = floors[i]->findAvailableSpot(vehicle);
+            if (spot != nullptr)
+            {
+                return spot;
+            }
+        }
+        return nullptr;
     }
 };
