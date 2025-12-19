@@ -68,12 +68,12 @@ public:
     {
         return !isOccupied && vehicle->getSize() <= spotSize;
     }
-    bool parkVehicle(Vehicle *vehicle)
+    void parkVehicle(Vehicle *vehicle)
     {
         isOccupied = true;
         parkedVehicle = vehicle;
     }
-    bool unparkVehicle(Vehicle *vehicle)
+    void unparkVehicle()
     {
         isOccupied = false;
         parkedVehicle = nullptr;
@@ -84,4 +84,42 @@ public:
     }
     string getSpotId() const { return spotId; }
     VehicleSize getSpotSize() const { return spotSize; }
+    Vehicle *getParkedVehicle() const { return parkedVehicle; }
+};
+
+class ParkingTicket
+{
+private:
+    ParkingSpot *parkingSpot;
+    string ticketId;
+    // Vehicle* vehicle; omitting this for now, as we can access through the spot
+    long entryTime, exitTime;
+
+public:
+    ParkingTicket(ParkingSpot *spot, Vehicle *v)
+    {
+        parkingSpot = spot;
+        entryTime = time(0);
+        ticketId = spot->getSpotId() + "_" + to_string(entryTime);
+    }
+    void setExitTimeStamp()
+    {
+        exitTime = time(0);
+    }
+    long getEntryTimestamp() const
+    {
+        return entryTime;
+    }
+    long getExitTimestamp() const
+    {
+        return exitTime;
+    }
+    string getTicketId() const
+    {
+        return ticketId;
+    }
+    ParkingSpot *getParkingSpot() const
+    {
+        return parkingSpot;
+    }
 };
