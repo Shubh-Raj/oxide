@@ -56,3 +56,72 @@ public:
         return new Product(sku, name, price);
     }
 };
+
+class InventoryStore{
+    public:
+    virtual ~InventoryStore() {}
+    virtual void addProduct(Product* prod, int qty) = 0;
+    virtual void removeProduct(int sku, int qty) = 0;
+    virtual int checkStock(int sku) = 0;
+    virtual vector<Product*> listAvailableProducts() = 0;
+};
+
+class DbInventoryStore : public InventoryStore {
+private:
+    map<int,int>* stock;             // SKU -> quantity
+    map<int,Product*>* products;     // SKU -> Product*
+public:
+    DbInventoryStore(){
+        stock = new map<int,int>();
+        products = new map<int,Product*> ();
+    }
+    ~DbInventoryStore(){
+        for(auto it: *products){
+            delete it.second;
+        }
+        delete stock;
+        delete products;
+    }
+
+    void addProduct(Product* product, int qty) override{
+        // stock->insert({product->getSku(),qty});
+        int sku = product->getSku();
+        if (products->count(sku) == 0) {
+            // Does not exist
+            (*products)[sku] = product;
+        } else {
+            delete product;
+        }
+        (*stock)[sku] += qty;
+    }
+
+    void removeProduct(int sku, int qty) override{
+        if (stock->count(sku) == 0) 
+            return;
+        if((*stock)[sku]<=qty){
+            (*stock).erase(sku);
+            // (*products).erase(sku);
+        }
+        else{
+            (*stock)[sku]-=qty;
+        }
+    }
+
+    int checkStock(int sku){
+        if((*stock)[sku]>0){
+            return (*stock)[sku];
+        }
+        return 0;
+    }
+
+    vector<Product*> listAvailableProducts() override {
+        vector<Product*> availableProducts;
+        for(auto it: *(stock)){
+            if(it.second>0 && products->count(it.first)){
+                availableProducts.push_back((*products)[it.first]);
+            }
+        }
+        return availableProducts;
+    }
+};
+
