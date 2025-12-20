@@ -183,3 +183,68 @@ public:
         cout << "[WeeklyReplenish] Weekly replenishment triggered for inventory.\n";
     }
 };
+
+class DarkStore {
+private:
+    string name;
+    double x, y;                       // location coordinates
+    InventoryManager* inventoryManager;
+    ReplenishStrategy* replenishStrategy;
+public:
+    DarkStore(string n, double x_coord, double y_coord) {
+        name = n;
+        x = x_coord;
+        y = y_coord;
+        inventoryManager = new InventoryManager(new DbInventoryStore);
+
+    }
+    ~DarkStore() {
+        delete inventoryManager;
+        if (replenishStrategy) delete replenishStrategy;
+    }
+    double distanceTo(double ux, double uy) {
+        return sqrt((x - ux)*(x - ux) + (y - uy)*(y - uy));
+    }
+    void runReplenishment(map<int,int> itemsToReplenish) {
+        if (replenishStrategy) {
+            replenishStrategy->replenish(inventoryManager, itemsToReplenish);
+        }
+    }
+
+    vector<Product*> getAllProducts() {
+        return inventoryManager->getAvailableProducts();
+    }
+
+    int checkStock(int sku) {
+        return inventoryManager->checkStock(sku);
+    }
+
+    void removeStock(int sku, int qty) {
+        inventoryManager->removeStock(sku, qty); 
+    }
+
+    void addStock(int sku, int qty) {
+        // Product* prod = ProductFactory::createProduct(sku);
+        inventoryManager->addStock(sku, qty);
+    }
+
+    // Getters & Setters
+    void setReplenishStrategy(ReplenishStrategy* strategy) {
+        this->replenishStrategy = strategy;
+    }
+
+    string getName() {
+        return this->name;
+    }
+
+    double getXCoordinate() {
+        return this->x;
+    }
+
+    double getYCoordinate() {
+        return this->y;
+    }
+    InventoryManager* getInventoryManager() {
+        return this->inventoryManager;
+    }
+};
