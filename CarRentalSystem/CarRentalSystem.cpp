@@ -116,3 +116,24 @@ class CarManager{
 };
 
 CarManager* CarManager::instance=nullptr;
+
+class Customer{
+    private:
+    static int customerId;
+    string name, phoneNo, licenseNo;
+    public:
+    Customer(int customerId, string& name, string& phoneNo, string& licenseNo){
+        this->customerId = customerId;
+        this->name = name;
+        this->phoneNo = phoneNo;
+        this->licenseNo = licenseNo;
+        customerId = ++customerId;
+    }
+    void getCustomerDetails(){
+        cout << "Customer Name: " << name << endl;
+        cout << "Phone No: " << phoneNo << endl;
+        cout << "License No: " << licenseNo << endl;
+    }
+};
+
+int Customer::customerId = 0;
