@@ -322,7 +322,6 @@ class AvailablitySearchStrategy : public SearchStrategy{
     }
 };
 
-
 class SearchFactory{
     private:
     ReservationManager* reservationManager;
@@ -344,4 +343,9 @@ class SearchFactory{
     SearchStrategy* createAvailabilityStrategy(int startDate, int endDate){
         return new AvailablitySearchStrategy(reservationManager, startDate, endDate);
     }
+};
+
+class PaymentStrategy{
+    virtual int processPayment(int amount) = 0;
+    virtual ~PaymentStrategy(){};
 };
