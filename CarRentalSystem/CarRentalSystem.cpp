@@ -159,4 +159,19 @@ class Reservation{
         int cost = duration*reservedCar->getRentalPricePerDay();
         return cost;
     }
+    void getDetail(){
+        cout << "Reservation Details:" << endl;
+        customer->getCustomerDetails();
+        reservedCar->getCarDetails();
+        cout << "Start Date: " << startDate << endl;
+        cout << "End Date: " << endDate << endl;
+        cout << "Status: ";
+        switch(status) {
+            case ACTIVE: cout << "ACTIVE"; break;
+            case CANCELLED: cout << "CANCELLED"; break;
+            case COMPLETED: cout << "COMPLETED"; break;
+        }
+        cout << endl;
+        cout << "Total Amount: " << calculateTotalAmount() << endl;
+    }
 };
