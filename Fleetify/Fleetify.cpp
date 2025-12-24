@@ -394,11 +394,10 @@ class PaymentFactory{
         }
         return instance;
     }
-    PaymentStrategy* createUPIStrategy(string upiId){
-        return new UPIPayment(upiId);
-    }
-    PaymentStrategy* createNetBankingStrategy(string id){
-        return new NetBanking(id);
+    PaymentStrategy* getStrategy(string type, string id) {
+        if (type == "UPI") return new UPIPayment(id);
+        if (type == "NetBanking") return new NetBanking(id);
+        return nullptr;
     }
 };
 
@@ -470,17 +469,11 @@ class CarRentalSystem{
             return;
         }
         int amount = reservation->calculateTotalAmount();
-        PaymentStrategy* paymentStrategy = nullptr;
-        //can move this part to factory
-        if(paymentType=="UPI"){
-            paymentStrategy = paymentFactory->createUPIStrategy(id);
-            paymentStrategy->processPayment(amount);
+        PaymentStrategy* p = paymentFactory->getStrategy(paymentType, id);
+        if (p) {
+            p->processPayment(reservation->calculateTotalAmount());
+            delete p; 
         }
-        if(paymentType=="NetBanking"){
-            paymentStrategy = paymentFactory->createNetBankingStrategy(id);
-            paymentStrategy->processPayment(amount);
-        }
-        delete paymentStrategy;
     }
 };
 
