@@ -346,6 +346,52 @@ class SearchFactory{
 };
 
 class PaymentStrategy{
-    virtual int processPayment(int amount) = 0;
+    public:
+    virtual bool processPayment(int amount) = 0;
     virtual ~PaymentStrategy(){};
+};
+
+class UPIPayment : public PaymentStrategy {
+    private:
+    string upiId;
+    public:
+    UPIPayment(string upiId){
+        this->upiId = upiId;
+    }
+    bool processPayment(int amount){
+        cout<<"Successfully paid amount "<<amount<<" via UPI.\n";
+        return true;
+    }
+};
+
+class NetBanking : public PaymentStrategy {
+    private:
+    string id;
+    public:
+    NetBanking(string id){
+        this->id = id;
+    }
+    bool processPayment(int amount){
+        cout<<"Successfully paid amount "<<amount<<" via net banking.\n";
+        return true;
+    }
+};
+
+class PaymentFactory{
+    private:
+    PaymentFactory(){}
+    static PaymentFactory* instance;
+    public:
+    static PaymentFactory* getInstance(){
+        if(instance == nullptr){
+            instance = new PaymentFactory();
+        }
+        return instance;
+    }
+    PaymentStrategy* createUPIStrategy(string upiId){
+        return new UPIPayment(upiId);
+    }
+    PaymentStrategy* createNetBankingStrategy(string id){
+        return new NetBanking(id);
+    }
 };
